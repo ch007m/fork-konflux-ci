@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: enterprise-contract
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: enterprise-contract
+spec:
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: enterprise-contract-service
+  source:
+    repoURL: cnoe://enterprise-contract
+    targetRevision: HEAD
+    path: "."
+  project: default
+  syncPolicy:
+    automated:
+      selfHeal: true
+      syncOptions:
+        - CreateNamespace=true

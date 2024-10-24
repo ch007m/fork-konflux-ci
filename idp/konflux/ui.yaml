@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ui
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: ui
+spec:
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: konflux-ui
+  source:
+    repoURL: cnoe://ui
+    targetRevision: HEAD
+    path: "."
+  project: default
+  syncPolicy:
+    automated:
+      selfHeal: true
+      syncOptions:
+        - CreateNamespace=true

@@ -1,0 +1,47 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test-pvc-ns
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: test-pvc
+  namespace: test-pvc-ns
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pvc-consumer
+  namespace: test-pvc-ns
+spec:
+  containers:
+  - name: test-pvc-consumer
+    image: registry:2
+    resources:
+      requests:
+        cpu: 10m
+        memory: 50Mi
+      limits:
+        cpu: 50m
+        memory: 100Mi
+    securityContext:
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      # ArgoCD reports such error: container has runAsNonRoot and image will run as root (pod: "test-pvc-consumer_test-pvc-ns(8afe01c3-469f-4c13-bc50-8cb0226ea8ff)", container: test-pvc-consumer)
+      # To fix it: we added => runAsUser: 1000
+      runAsUser: 1000
+    volumeMounts:
+    - name: my-volume
+      mountPath: /data
+  volumes:
+  - name: my-volume
+    persistentVolumeClaim:
+      claimName: test-pvc

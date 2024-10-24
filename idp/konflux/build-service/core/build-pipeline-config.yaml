@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: build-pipeline-config
+  namespace: build-service
+data:
+  config.yaml: |
+    default-pipeline-name: docker-build
+    pipelines:
+    - name: fbc-builder
+      bundle: quay.io/konflux-ci/tekton-catalog/pipeline-fbc-builder@sha256:617f2506341e9802ce156e522bf5562b768cb5ac51ea0e8b4c13420909a04241
+    - name: docker-build
+      bundle: quay.io/konflux-ci/tekton-catalog/pipeline-docker-build@sha256:b4a1da4ddebbd145ea65ec6d45bdfe5ea69d4123cb6d3424217971c450a946ca

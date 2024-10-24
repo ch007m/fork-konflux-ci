@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: application-api
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: application-api
+spec:
+  destination:
+    server: "https://kubernetes.default.svc"
+  source:
+    repoURL: cnoe://application-api
+    targetRevision: HEAD
+    path: "."
+  project: default
+  syncPolicy:
+    automated:
+      selfHeal: true

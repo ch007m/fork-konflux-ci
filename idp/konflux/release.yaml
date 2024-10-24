@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: release
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: release
+spec:
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: release-service
+  source:
+    repoURL: cnoe://release
+    targetRevision: HEAD
+    path: "."
+  project: default
+  syncPolicy:
+    automated:
+      selfHeal: true
+      syncOptions:
+        - CreateNamespace=true

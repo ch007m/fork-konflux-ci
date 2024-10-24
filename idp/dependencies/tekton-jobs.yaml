@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tekton-jobs
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: tekton-jobs
+spec:
+  destination:
+    namespace: tekton-pipelines
+    server: "https://kubernetes.default.svc"
+  source:
+    repoURL: cnoe://tekton-jobs
+    targetRevision: HEAD
+    path: "."
+  project: default
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

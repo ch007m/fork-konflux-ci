@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tekton-operator
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: tekton-operator
+spec:
+  destination:
+    namespace: tekton-operator
+    server: "https://kubernetes.default.svc"
+  source:
+    repoURL: cnoe://tekton-operator
+    targetRevision: HEAD
+    path: "."
+  project: default
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

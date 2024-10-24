@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: test-pvc
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: test-pvc
+spec:
+  destination:
+    namespace: test-pvc
+    server: "https://kubernetes.default.svc"
+  source:
+    repoURL: cnoe://test-pvc
+    targetRevision: HEAD
+    path: "."
+  project: default
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
