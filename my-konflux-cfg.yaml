@@ -1,0 +1,34 @@
+---
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+  kubeadmConfigPatches:
+  - |
+    kind: InitConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "ingress-ready=true"
+        system-reserved: memory=8Gi
+  extraPortMappings:
+  ## From IDP config - Begin ##
+  - containerPort: 443
+    hostPort: 8443
+    protocol: TCP
+  ## From IDP config - End ##
+  - containerPort: 30010
+    hostPort: 8888
+    protocol: TCP
+  - containerPort: 30011
+    hostPort: 9443
+    protocol: TCP
+
+## From IDP config - Begin ##
+containerdConfigPatches:
+  - |-
+    [plugins."io.containerd.grpc.v1.cri".registry.mirrors."gitea.cnoe.localtest.me:8443"]
+      endpoint = ["https://gitea.cnoe.localtest.me"]
+    [plugins."io.containerd.grpc.v1.cri".registry.configs."gitea.cnoe.localtest.me".tls]
+      insecure_skip_verify = true
+## From IDP config - End ##
+
