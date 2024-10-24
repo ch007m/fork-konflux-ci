@@ -1,0 +1,50 @@
+# Empty secret for registry that does not use authentication
+apiVersion: v1
+kind: Secret
+metadata:
+  name: regcred-empty
+  namespace: user-ns2
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJ4Ijp7ImVtYWlsIjoiIn19fQ==
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: appstudio-pipeline
+  namespace: user-ns2
+secrets:
+- name: regcred-empty
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: user-ns2
+  name: ns2-pod-viewer-job-creator
+rules:
+- apiGroups: [""]
+  resources:
+    - pods
+  verbs: ["get", "list", "watch", "delete"]
+- apiGroups: ["batch"]
+  resources:
+    - jobs
+  verbs: ["create", "delete", "get", "list", "watch"]
+- apiGroups: [""]
+  resources:
+    - pods/log
+  verbs: ["get", "list"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: user-ns2
+  name: ns2-pod-viewer-job-creator-binding
+subjects:
+- kind: ServiceAccount
+  name: appstudio-pipeline
+  namespace: user-ns2
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ns2-pod-viewer-job-creator

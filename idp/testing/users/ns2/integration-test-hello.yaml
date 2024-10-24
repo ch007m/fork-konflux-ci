@@ -1,0 +1,19 @@
+apiVersion: appstudio.redhat.com/v1beta2
+kind: IntegrationTestScenario
+metadata:
+  name: test-hello
+  namespace: user-ns2
+spec:
+  application: test-component
+  contexts:
+    - description: Application testing
+      name: application
+  resolverRef:
+    params:
+      - name: url
+        value: 'https://github.com/konflux-ci/testrepo'
+      - name: revision
+        value: ba3f8828d061a539ef774229d2f5c8651d854d7e
+      - name: pathInRepo
+        value: integration-tests/testrepo-integration.yaml
+    resolver: git
