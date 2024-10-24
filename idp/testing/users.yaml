@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: application-api
+  name: users
   namespace: argocd
   labels:
-    app.kubernetes.io/name: application-api
+    app.kubernetes.io/name: users
 spec:
   destination:
     server: "https://kubernetes.default.svc"
   source:
-    repoURL: cnoe://testing
+    repoURL: cnoe://users
     targetRevision: HEAD
-    path: "users"
+    path: "."
   project: default
   syncPolicy:
     automated:
