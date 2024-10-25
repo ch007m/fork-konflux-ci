@@ -9,7 +9,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: konflux.10.0.77.131.nip.io
+    - host: konflux.192.168.129.0.nip.io
       http:
         paths:
           - backend:
