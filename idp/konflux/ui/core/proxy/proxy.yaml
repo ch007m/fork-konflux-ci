@@ -175,7 +175,9 @@ spec:
           - --oidc-issuer-url
           #- https://konflux.cnoe.localtest.me:9443/idp/realms/redhat-external
           # Using internal kube address
-          - https://proxy.konflux-ui.svc.cluster.local:9443/idp/realms/redhat-external
+          # - https://proxy.konflux-ui.svc.cluster.local:9443/idp/realms/redhat-external
+          # Using ingress route
+          - https://keycloak.cnoe.localtest.me:8443/idp
           - --ssl-insecure-skip-verify
           - "true"
           - --skip-jwt-bearer-tokens
