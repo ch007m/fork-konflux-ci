@@ -4,11 +4,10 @@ resources:
   - core
   - certmanager
 
-# Don't patch the service to change ClusterIP to NodePort as ports are not exposed on kind
-#patches:
-#  - path: node-port-patch.yaml
-#    target:
-#      group: ""
-#      version: v1
-#      kind: Service
-#      name: proxy
+patches:
+  - path: node-port-patch.yaml
+    target:
+      group: ""
+      version: v1
+      kind: Service
+      name: proxy
