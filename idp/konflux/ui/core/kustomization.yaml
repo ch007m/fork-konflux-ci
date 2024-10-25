@@ -4,6 +4,7 @@ resources:
   - chrome
   - hac
   - ns.yaml
+  - ingress.yaml
   - proxy
 images:
   # chrome frontend
