@@ -173,7 +173,7 @@ spec:
           - --http-address
           - "127.0.0.1:6000"
           - --oidc-issuer-url
-          - https://konflux.10.0.77.131.nip.io:8443/idp/realms/redhat-external
+          - https://konflux.cnoe.localtest.me:9443/idp/realms/redhat-external
           - --ssl-insecure-skip-verify
           - "true"
           - --skip-jwt-bearer-tokens
