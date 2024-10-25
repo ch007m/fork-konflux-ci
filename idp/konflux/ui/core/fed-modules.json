@@ -2,7 +2,7 @@
     "chrome": {
         "manifestLocation": "/apps/chrome/js/fed-mods.json",
         "config": {
-            "ssoUrl": "https://konflux.10.0.77.131.nip.io:9443/idp/"
+            "ssoUrl": "https://konflux.cnoe.localtest.me:9443/idp/"
         },
         "fullProfile": false
     },
