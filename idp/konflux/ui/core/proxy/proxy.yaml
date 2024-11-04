@@ -173,9 +173,6 @@ spec:
           - --http-address
           - "127.0.0.1:6000"
           - --oidc-issuer-url
-          #- https://konflux.cnoe.localtest.me:9443/idp/realms/redhat-external
-          # Using internal kube address
-          # - https://proxy.konflux-ui.svc.cluster.local:9443/idp/realms/redhat-external
           # Using konflux ingress route
           - https://konflux.cnoe.localtest.me:8443/idp/realms/redhat-external
           - --ssl-insecure-skip-verify
