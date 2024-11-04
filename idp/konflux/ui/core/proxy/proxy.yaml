@@ -173,8 +173,8 @@ spec:
           - --http-address
           - "127.0.0.1:6000"
           - --oidc-issuer-url
-          # Using konflux ingress route
-          - https://konflux.cnoe.localtest.me:8443/idp/realms/redhat-external
+          # Using ingress keycloak route
+          - https://keycloak.cnoe.localtest.me:8443/idp/realms/redhat-external
           - --ssl-insecure-skip-verify
           - "true"
           - --skip-jwt-bearer-tokens

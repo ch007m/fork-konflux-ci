@@ -28,7 +28,7 @@ spec:
     # This field don't longer exist
     #- name: hostname-path
     #  value: /idp
-    -
+
     # Set the hostname to the following address to return the proper host + port otherwise ^port is omitted
     - name: hostname
       value: https://keycloak.cnoe.localtest.me:8443/idp
