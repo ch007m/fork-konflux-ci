@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: smee
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: smee
+spec:
+  generators:
+    - clusters:
+        selector:
+          matchLabels:
+            argocd.argoproj.io/secret-type: konflux
+  template:
+    spec:
+      destination:
+        namespace: smee-client
+        server: https://kubernetes.default.svc
+      project: default
+      source:
+        repoURL: cnoe://smee-client
+        targetRevision: HEAD
+        path: "."
+        kustomize:
+          patches:
+            - target:
+                kind: Deployment
+                name: gosmee-client
+              patch: |-
+                - op: replace
+                  path: /spec/template/spec/containers/0/args/1
+                  value: {{ .smee-url }}
+      syncPolicy:
+        automated:
+          selfHeal: true
+          syncOptions:
+            - CreateNamespace=true
