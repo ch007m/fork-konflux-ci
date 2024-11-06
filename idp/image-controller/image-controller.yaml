@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: image-controller
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: image-controller
+spec:
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: image-controller
+  source:
+    repoURL: cnoe://manifests
+    targetRevision: HEAD
+    path: "."
+  project: default
+  syncPolicy:
+    automated:
+      selfHeal: true
+      syncOptions:
+        - CreateNamespace=true
