@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: github-app-secrets-job
+  namespace: jobs
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: github-app-secrets-job-role
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: github-app-secrets-job-role-binding-pipelines-as-code
+  namespace: pipelines-as-code
+subjects:
+  - kind: ServiceAccount
+    name: github-app-secrets-job
+    namespace: jobs
+roleRef:
+  kind: ClusterRole
+  name: github-app-secrets-job-role
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: github-app-secrets-job-role-binding-build-service
+  namespace: build-service
+subjects:
+  - kind: ServiceAccount
+    name: github-app-secrets-job
+    namespace: jobs
+roleRef:
+  kind: ClusterRole
+  name: github-app-secrets-job-role
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: github-app-secrets-job-role-binding-integration-service
+  namespace: integration-service
+subjects:
+  - kind: ServiceAccount
+    name: github-app-secrets-job
+    namespace: jobs
+roleRef:
+  kind: ClusterRole
+  name: github-app-secrets-job-role
+  apiGroup: rbac.authorization.k8s.io

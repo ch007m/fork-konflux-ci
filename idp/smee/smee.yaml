@@ -6,19 +6,26 @@ metadata:
   labels:
     app.kubernetes.io/name: smee
 spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
   generators:
-    - clusters:
-        selector:
-          matchLabels:
-            argocd.argoproj.io/secret-type: konflux
+    - plugin:
+        configMapRef:
+          name: secret-var-plugin-generator
+        input:
+          parameters:
+            secret_vars:
+              - "smee_url"
   template:
+    metadata:
+      name: smee
     spec:
       destination:
         namespace: smee-client
         server: https://kubernetes.default.svc
       project: default
       source:
-        repoURL: cnoe://smee-client
+        repoURL: cnoe://manifests
         targetRevision: HEAD
         path: "."
         kustomize:
@@ -29,7 +36,7 @@ spec:
               patch: |-
                 - op: replace
                   path: /spec/template/spec/containers/0/args/1
-                  value: {{ .smee-url }}
+                  value: '{{ .smee_url | trim }}'
       syncPolicy:
         automated:
           selfHeal: true
