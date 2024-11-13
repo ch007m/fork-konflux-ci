@@ -4,4 +4,3 @@ kind: Kustomization
 resources:
   - registry.yaml
   - certificate.yaml
-  - trust-bundle.yaml

@@ -3,6 +3,8 @@ apiVersion: trust.cert-manager.io/v1alpha1
 kind: Bundle
 metadata:
   name: trusted-ca
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
 spec:
   sources:
   - useDefaultCAs: true
