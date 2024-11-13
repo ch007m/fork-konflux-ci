@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - https://github.com/konflux-ci/build-service/config/default?ref=7049676a22c0984d691fd84624ccfcbffae73890
   - build-pipeline-config.yaml
-  - trust-bundle.yaml
 
 namespace: build-service
 
