@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: foundations
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: foundations
+spec:
+  generators:
+    list:
+      elements:
+        - cluster: dev-cluster
+          url: https://kubernetes.default.svc
+  template:
+    spec:
+      destination:
+        namespace: argocd
+        server: '{{url}}'
+      source:
+        repoURL: cnoe://foundations
+        targetRevision: HEAD
+        path: "."
+      project: default
+      syncPolicy:
+        automated:
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true

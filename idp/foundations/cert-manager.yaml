@@ -5,9 +5,11 @@ metadata:
   namespace: argocd
   labels:
     app.kubernetes.io/name: trust-manager
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   destination:
-    namespace: cert-manager
+    namespace: argocd
     server: "https://kubernetes.default.svc"
   source:
     repoURL: cnoe://trust-manager
