@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dex
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: dex
+spec:
+  destination:
+    namespace: dex
+    server: "https://kubernetes.default.svc"
+  sources:
+    - repoURL: cnoe://dex
+      targetRevision: HEAD
+      path: "."
+  project: default
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

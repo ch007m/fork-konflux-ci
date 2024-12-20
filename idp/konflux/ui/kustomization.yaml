@@ -4,6 +4,11 @@ resources:
   - core
   - certmanager
 
+configMapGenerator:
+  - name: nginx-idp-location
+    files:
+      - nginx-idp-location.conf
+
 # Don't patch the service to change ClusterIP to NodePort as ports are not exposed on kind
 #patches:
 #  - path: node-port-patch.yaml
@@ -12,3 +17,12 @@ resources:
 #      version: v1
 #      kind: Service
 #      name: proxy
+patches:
+  - path: nginx-idp-location-patch.yaml
+    target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: proxy
+
+namespace: konflux-ui

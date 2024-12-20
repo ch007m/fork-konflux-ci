@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: konflux-ui-jobs
+  namespace: konflux-ui
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: konflux-ui-jobs-role
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: konflux-ui-jobs-role-binding
+  namespace: konflux-ui
+subjects:
+  - kind: ServiceAccount
+    name: konflux-ui-jobs
+    namespace: konflux-ui
+roleRef:
+  kind: ClusterRole
+  name: konflux-ui-jobs-role
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: konflux-dex-jobs-role-binding
+  namespace: dex
+subjects:
+  - kind: ServiceAccount
+    name: konflux-ui-jobs
+    namespace: konflux-ui
+roleRef:
+  kind: ClusterRole
+  name: konflux-ui-jobs-role
+  apiGroup: rbac.authorization.k8s.io

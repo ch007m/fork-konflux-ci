@@ -19,12 +19,12 @@ kind: ClusterRole
 metadata:
   name: konflux-proxy
 rules:
-- apiGroups: [""]
-  resources: ["users", "groups"]
-  verbs: ["impersonate"]
-- apiGroups: ["authorization.k8s.io"]
-  resources: ["localsubjectaccessreviews"]
-  verbs: ["create"]
+  - apiGroups: [""]
+    resources: ["users", "groups"]
+    verbs: ["impersonate"]
+  - apiGroups: ["authorization.k8s.io"]
+    resources: ["localsubjectaccessreviews"]
+    verbs: ["create"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -35,18 +35,18 @@ roleRef:
   kind: ClusterRole
   name: konflux-proxy
 subjects:
-- kind: ServiceAccount
-  name: proxy
-  namespace: konflux-ui
+  - kind: ServiceAccount
+    name: proxy
+    namespace: konflux-ui
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: konflux-proxy-namespace-lister
 rules:
-- apiGroups: [""]
-  resources: ["namespaces"]
-  verbs: ["list", "get"]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["list", "get"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -57,6 +57,6 @@ roleRef:
   kind: ClusterRole
   name: konflux-proxy-namespace-lister
 subjects:
-- kind: ServiceAccount
-  name: proxy
-  namespace: konflux-ui
+  - kind: ServiceAccount
+    name: proxy
+    namespace: konflux-ui
