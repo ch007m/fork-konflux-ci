@@ -200,9 +200,11 @@ spec:
             - --http-address
             - "127.0.0.1:6000"
             - --redirect-url
-            - https://localhost:9443/oauth2/callback
+            # Changed from upstream project as we use ingress
+            - https://dex.cnoe.localtest.me:8443/oauth2/callback
             - --oidc-issuer-url
-            - https://localhost:9443/idp/
+            # Changed from upstream project as we use ingress
+            - https://dex.cnoe.localtest.me:8443/idp/
             - --cookie-secure
             - "true"
             - --cookie-name
@@ -214,7 +216,8 @@ spec:
             - --set-xauthrequest
             - "true"
             - --whitelist-domain
-            - localhost:9443
+            # Changed from upstream project as we use ingress
+            - dex.cnoe.localtest.me
           ports:
             - containerPort: 6000
               name: web

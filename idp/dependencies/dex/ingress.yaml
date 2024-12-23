@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dex-ui
+  namespace: dex
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+spec:
+  ingressClassName: nginx
+  #tls:
+  #  - hosts:
+  #    - dex.cnoe.localtest.me
+  #    secretName: dex-cert
+  rules:
+    - host: dex.cnoe.localtest.me
+      http:
+        paths:
+          - backend:
+              service:
+                name: dex
+                port:
+                  number: 9443
+            path: /
+            pathType: Prefix

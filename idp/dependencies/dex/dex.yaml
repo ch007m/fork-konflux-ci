@@ -17,6 +17,8 @@ spec:
   dnsNames:
   - localhost
   - dex.dex
+  # Changed from upstream project as we use ingress
+  - dex.cnoe.localtest.me
   issuerRef:
     kind: ClusterIssuer
     name: self-signed-cluster-issuer
@@ -98,6 +100,7 @@ spec:
   ports:
   - name: dex
     port: 9443
+    #nodePort: 30011
     protocol: TCP
     targetPort: 9443
   selector:
