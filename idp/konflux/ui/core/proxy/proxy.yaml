@@ -201,7 +201,7 @@ spec:
             - "127.0.0.1:6000"
             - --redirect-url
             # Changed from upstream project as we use ingress
-            - https://dex.cnoe.localtest.me:8443/oauth2/callback
+            - https://konflux.cnoe.localtest.me:8443/oauth2/callback
             - --oidc-issuer-url
             # Changed from upstream project as we use ingress
             - https://dex.cnoe.localtest.me:8443/idp/
@@ -217,7 +217,7 @@ spec:
             - "true"
             - --whitelist-domain
             # Changed from upstream project as we use ingress
-            - dex.cnoe.localtest.me
+            - "*.cnoe.localtest.me:9443"
           ports:
             - containerPort: 6000
               name: web
