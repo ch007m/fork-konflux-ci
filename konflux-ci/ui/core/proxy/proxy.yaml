@@ -31,16 +31,16 @@ spec:
           matchLabels:
             app: proxy
       initContainers:
-      - name: copy-chrome-static-content
-        image: quay.io/cloudservices/chrome-service:d205bf3
+      - name: copy-static-content
+        image: quay.io/konflux-ci/konflux-ui
         command:
           - cp
           - -R
-          - /static
-          - /mnt/chrome
+          - /opt/app-root/src/.
+          - /mnt/static-content/
         volumeMounts:
-        - name: chrome-static
-          mountPath: "/mnt/chrome"
+        - name: static-content
+          mountPath: /mnt/static-content
         securityContext:
           readOnlyRootFilesystem: true
           runAsNonRoot: true
@@ -52,20 +52,34 @@ spec:
           requests:
             cpu: 10m
             memory: 64Mi
-      - name: add-sva-token-to-nginx-config
+      - name: generate-nginx-configs
         image: registry.access.redhat.com/ubi9/ubi@sha256:66233eebd72bb5baa25190d4f55e1dc3fff3a9b77186c1f91a0abdb274452072
+        envFrom:
+          - configMapRef:
+              name: proxy-init-config
         command:
           - sh
           - -c
           - |
             set -e
+
+            auth_conf=/mnt/nginx-generated-config/auth.conf
             
-            token=$(cat /mnt/api-token/token)
-            token64=$(cat /mnt/api-token/token | base64 -w 0 | head -c-1)
+            if [[ "$IMPERSONATE" == "true" ]]; then
+              token=$(cat /mnt/api-token/token)
+              echo 'auth_request_set $user  $upstream_http_x_auth_request_email;' > "$auth_conf"
+              echo 'proxy_set_header Impersonate-User $user;' >> "$auth_conf"
+              echo "proxy_set_header Authorization \"Bearer $token\";" >> "$auth_conf"
+            else
+              echo "# impersonation was disabled by config" > "$auth_conf"
+            fi
 
-            echo "proxy_set_header Authorization \"Bearer $token\";" > /mnt/nginx-generated-config/bearer.conf
+            chmod 640 "$auth_conf"
 
-            echo "proxy_set_header Sec-WebSocket-Protocol \"base64url.bearer.authorization.k8s.io.${token64}, base64.binary.k8s.io\";" > /mnt/nginx-generated-config/websocket.conf
+            echo \
+              "proxy_pass ${TEKTON_RESULTS_URL:?tekton results url must be provided};" \
+              > /mnt/nginx-generated-config/tekton-results.conf
+
         volumeMounts:
         - name: nginx-generated-config
           mountPath: /mnt/nginx-generated-config
@@ -83,10 +97,10 @@ spec:
             cpu: 10m
             memory: 64Mi
       containers:
-      - image: openresty/openresty:1.25.3.1-0-jammy
-        name: nginx-120
+      - image: registry.access.redhat.com/ubi9/nginx-124@sha256:b924363ff07ee0f8fd4f680497da774ac0721722a119665998ff5b2111098ad1
+        name: nginx
         command: 
-          - "/usr/local/openresty/bin/openresty"
+          - nginx
           - "-g"
           - "daemon off;"
           - -c
@@ -130,8 +144,6 @@ spec:
             subPath: nginx.conf
             name: proxy
             readOnly: true
-          - name: chrome-static
-            mountPath: /opt/app-root/src/chrome
           - name: logs
             mountPath: /var/log/nginx
           - name: nginx-tmp
@@ -142,8 +154,8 @@ spec:
             mountPath: /mnt
           - name: nginx-generated-config
             mountPath: /mnt/nginx-generated-config
-          - name: openresty
-            mountPath: /var/run/openresty
+          - name: static-content
+            mountPath: /opt/app-root/src/static-content
         securityContext:
           readOnlyRootFilesystem: true
           runAsNonRoot: true
@@ -167,31 +179,42 @@ spec:
           runAsUser: 1001
       - image: quay.io/oauth2-proxy/oauth2-proxy@sha256:3da33b9670c67bd782277f99acadf7026f75b9507bfba2088eb2d497266ef7fc
         name: oauth2-proxy
+        env:
+        - name: OAUTH2_PROXY_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: oauth2-proxy-client-secret
+              key: client-secret
+        - name: OAUTH2_PROXY_COOKIE_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: oauth2-proxy-cookie-secret
+              key: cookie-secret
         args:
           - --provider
-          - keycloak-oidc
+          - oidc
+          - --provider-display-name
+          - "Dex OIDC"
+          - --client-id
+          - oauth2-proxy
           - --http-address
           - "127.0.0.1:6000"
+          - --redirect-url
+          - https://localhost:9443/oauth2/callback
           - --oidc-issuer-url
-          - https://localhost:9443/idp/realms/redhat-external
-          - --ssl-insecure-skip-verify
+          - https://localhost:9443/idp/
+          - --cookie-secure
           - "true"
-          - --skip-jwt-bearer-tokens
+          - --cookie-name
+          - __Host-konflux-ci-cookie
+          - --email-domain
+          - "*"
+          - --ssl-insecure-skip-verify
           - "true"
           - --set-xauthrequest
           - "true"
-          - --insecure-oidc-allow-unverified-email
-          - "true"
-          - --email-domain
-          - "*"
-          - --cookie-secret
-          - NOT_USED_BUT_REQUIRED_VALUE_32b_
-          - --client-secret
-          - this_value_is_required_but_not_used
-          - --client-id
-          - oauth2-proxy
-          - --oidc-extra-audience
-          - "account"
+          - --whitelist-domain
+          - localhost:9443
         ports:
           - containerPort: 6000
             name: web
@@ -215,8 +238,6 @@ spec:
               - key: nginx.conf
                 path: nginx.conf 
           name: proxy
-        - name: chrome-static
-          emptyDir: {}
         - name: logs
           emptyDir: {}
         - name: nginx-tmp
@@ -231,8 +252,9 @@ spec:
         - name: api-token
           secret:
             secretName: proxy
-        - name: openresty
+        - name: static-content
           emptyDir: {}
+
 ---
 apiVersion: v1
 kind: Service

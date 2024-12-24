@@ -3,8 +3,17 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
   - proxy.yaml
   - rbac.yaml
+
+images:
+- name: quay.io/konflux-ci/konflux-ui
+  newName: quay.io/konflux-ci/konflux-ui
+  newTag: 76c3a63732a385eb5a717c96ba6a623472edc9ef
+
 configMapGenerator:
   - name: proxy
     files:
       - nginx.conf
-
+  - name: proxy-init-config
+    literals:
+      - IMPERSONATE=true
+      - TEKTON_RESULTS_URL=https://tekton-results-api-service.tekton-pipelines.svc.cluster.local:8080
